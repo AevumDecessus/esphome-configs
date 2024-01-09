@@ -1,0 +1,49 @@
+substitutions:
+  device_name: test-device
+  api_encryption_key: BADKEY
+  ota_password: BADPASSWORD
+  wifi_ssid: BAD_SSID
+  wifi_password: BAD_PASSWORD
+  wifi_ip: 192.168.1.1
+  wifi_subnet: 255.255.255.0
+  wifi_gateway: 192.168.1.1
+  dns_server: 192.168.1.1
+  api_encryption_key: BADKEY
+
+esphome:
+  name: ${devicename}
+
+logger:
+
+api:
+  encryption:
+    key: ${api_encryption_key}
+
+wifi:
+  ssid: ${wifi_ssid}
+  password: ${wifi_password}
+  manual_ip:
+    static_ip: ${wifi_ip}
+    gateway: ${wifi_gateway}
+    dns1: ${dns_server}
+
+sensor:
+  - platform: wifi_signal
+    name: ${devicename} RSSI
+    update_interval: 5min
+    filters:
+      - median:
+        window_size: 5
+
+binary_sensor:
+  - platform: status
+    name: ${devicename} Status
+
+button:
+  - platform: restart
+    name: ${devicename} Restart
+
+esp32_ble_tracker:
+
+bluetooth_proxy:
+  active: true
