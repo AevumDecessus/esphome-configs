@@ -1,0 +1,11 @@
+substitutions:
+  device_name: test-device
+  pin: GPIO5
+sensor:
+  - platform: dht
+    pin: ${GPIO5}
+    temperature:
+      name: ${device_name}-temperature
+    humidity:
+      name: ${device_name}-humidity
+    update_interval: 30s
