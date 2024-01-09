@@ -3,7 +3,7 @@ substitutions:
   pin: GPIO5
 sensor:
   - platform: dht
-    pin: ${GPIO5}
+    pin: ${pin}
     temperature:
       name: ${device_name}-temperature
     humidity:
