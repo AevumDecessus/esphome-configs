@@ -1,0 +1,18 @@
+substitutions:
+  device_name: test-device
+
+sensor:
+  - platform: wifi_signal
+    name: ${devicename} RSSI
+    update_interval: 5min
+    filters:
+      - median:
+        window_size: 5
+
+binary_sensor:
+  - platform: status
+    name: ${devicename} Status
+
+button:
+  - platform: restart
+    name: ${devicename} Restart
