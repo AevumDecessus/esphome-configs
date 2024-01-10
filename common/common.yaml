@@ -10,7 +10,7 @@ substitutions:
   dns_server: 192.168.1.1
 
 esphome:
-  name: ${devicename}
+  name: ${device_name}
 
 logger:
 
