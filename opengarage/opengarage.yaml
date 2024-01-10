@@ -1,0 +1,232 @@
+# Pinout https://github.com/OpenGarage/OpenGarage-Hardware/blob/master/Schematic/1.1/PINs.txt
+substitutions:
+  device_name: Garage Door
+  relay_click_time: '500'
+  # Length of time in ms that the relay should stay active.
+  # Some garage doors need the relay to stay active for longer.
+  # Longer values can slow down when button presses respond.
+  # For example, if you open the door, then quickly try to stop/close it,
+  # Entered in milliseconds.
+  door_threshold: '50'
+  # Distance at which the door is considered open.
+  # Should be slightly more than the distance from the ceiling to the door.
+  # Must be lower than the car threshold.
+  # Entered in cm.
+  open_delay: '30'
+  close_delay: '30'
+  distance_update_threshold: 500ms
+  distance_pulse_time: 20us
+  # Clean up noise
+  distance_median_window_size: '30'
+  distance_median_send_first_at: '5'
+  open_alarm: 'false'
+  open_alarm_rtttl: 'two_short:d=4,o=6,b=100:c,p,c'
+  close_alarm: 'false'
+  close_alarm_rtttl: 'two_short:d=4,o=5,b=100:c,p,c'
+
+esp8266:
+  board: esp01_1m
+  restore_from_flash: true
+
+sensor:
+  - platform: ultrasonic
+    trigger_pin: GPIO12
+    echo_pin: GPIO14
+    name: ${device_name} Distance
+    id: distance
+    update_interval: ${distance_update_interval}
+    unit_of_measurement: cm
+    pulse_time: ${distance_pulse_time}
+    timeout: 3m
+    filters:
+      # set value to max on sensor timeout
+      - lambda: 'return isnan(x) ? 3 : x;'
+      # take median to reduce noise
+      - median:
+        window_size: ${distance_median_window_size}
+        send_first_at: ${distance_median_send_first_at}
+      - multiply: 100
+      - delta: 1
+
+status_led:
+  pin:
+    number: GPIO2
+    inverted: true
+
+switch:
+  # Relay
+  - platform: gpio
+    pin: GPIO15
+    id: relay
+    restore_mode: ALWAYS_OFF
+    on_turn_on:
+      # Only pulse on for relay_click_time
+      - delay: !lambda "return id(relay_click_time).state;"
+      - switch.turn_off relay
+  - platform: template
+    name: "${device_name} Open Alarm"
+    id: open_alarm
+    restore_mode: RESTORE_DEFAULT_OFF
+    optimistic: true
+    entity_category: config
+    icon: mdi:alarm-bell
+  - platform: template
+    name: "${device_name} Close Alarm"
+    id: close_alarm
+    restore_mode: RESTORE_DEFAULT_OFF
+    optimistic: true
+    entity_category: config
+    icon: mdi:alarm-bell
+
+output:
+  # Buzzer
+  - platform: esp8266_pwm
+    pin: GPIO13
+    id: buzzer_pwm
+
+rtttl:
+  output: buzzer_pwm
+
+binary_sensor:
+  # Button
+  - platform: gpio
+    pin:
+      number: GPIO0
+      mode: INPUT_PULLUP
+    id: physical_button
+    on_press:
+      switch.turn_on: relay
+
+number:
+  # Door threshold config
+  - platform: template
+    name: $device_name Door Threshold
+    id: door_threshold
+    min_value: 0
+    max_value: 300
+    step: 1
+    optimistic: true
+    restore_value: true
+    initial_value: $door_threshold
+    entity_category: config
+    mode: box
+    device_class: distance
+    unit_of_measurement: cm
+    icon: mdi:garage
+
+  # Relay click time config
+  - platform: template
+    name: $device_name Relay Click Time
+    id: relay_click_time
+    min_value: 100
+    max_value: 2000
+    step: 10
+    optimistic: true
+    restore_value: true
+    initial_value: $relay_click_time
+    entity_category: config
+    mode: box
+    unit_of_measurement: ms
+    icon: mdi:timer
+
+  # Open delay config
+  - platform: template
+    name: $device_name Door Open Delay
+    id: open_delay
+    min_value: 5
+    max_value: 60
+    step: 1
+    optimistic: true
+    restore_value: true
+    initial_value: $open_delay
+    entity_category: config
+    mode: box
+    unit_of_measurement: s
+    icon: mdi:timer
+
+  # Close delay config
+  - platform: template
+    name: $device_name Door Close Delay
+    id: close_delay
+    min_value: 5
+    max_value: 60
+    step: 1
+    optimistic: true
+    restore_value: true
+    initial_value: $close_delay
+    entity_category: config
+    mode: box
+    unit_of_measurement: s
+    icon: mdi:timer
+
+cover:
+  # Main cover
+  - platform: template
+    name: $device_name Door
+    id: garage_door_cover
+    device_class: garage
+    lambda: 'return id(distance).state <= id(door_threshold).state ? COVER_OPEN : COVER_CLOSED;'
+    open_action:
+      script.execute: open_door
+    close_action:
+      script.execute: close_door
+    stop_action:
+      script.execute: stop_door
+
+script:
+  - id: open_door
+    then:
+      if:
+        condition:
+          lambda: 'return id(garage_door_cover).position == COVER_CLOSED;'
+        then:
+          - if:
+              condition:
+                lambda: 'return id(open_alarm).state;'
+              then:
+                - rtttl.play:
+                    rtttl: $open_alarm_rtttl
+                - wait_until:
+                    not: rtttl.is_playing
+          - switch.turn_on: relay
+          - cover.template.publish:
+              id: garage_door_cover
+              current_operation: OPENING
+          - delay: !lambda "return 1000 * id(open_delay).state;"
+          - cover.template.publish:
+              id: garage_door_cover
+              current_operation: IDLE
+  - id: close_door
+    then:
+      if:
+        condition:
+          lambda: 'return id(garage_door_cover).position == COVER_OPEN;'
+        then:
+          - if:
+              condition:
+                lambda: 'return id(close_alarm).state;'
+              then:
+                - rtttl.play:
+                    rtttl: $close_alarm_rtttl
+                - wait_until:
+                    not: rtttl.is_playing
+          - switch.turn_on: relay
+          - cover.template.publish:
+              id: garage_door_cover
+              current_operation: CLOSING
+          - delay: !lambda "return 1000 * id(close_delay).state;"
+          - cover.template.publish:
+              id: garage_door_cover
+              current_operation: IDLE
+  - id: stop_door
+    then:
+      if:
+        condition:
+          or:
+            - lambda: 'return id(garage_door_cover).current_operation == COVER_OPERATION_OPENING;'
+            - lambda: 'return id(garage_door_cover).current_operation == COVER_OPERATION_CLOSING;'
+        then:
+          - switch.turn_on: relay
+          - cover.template.publish:
+              id: garage_door_cover
+              current_operation: IDLE
