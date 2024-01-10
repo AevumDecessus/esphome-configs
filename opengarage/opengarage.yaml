@@ -10,11 +10,10 @@ substitutions:
   door_threshold: '50'
   # Distance at which the door is considered open.
   # Should be slightly more than the distance from the ceiling to the door.
-  # Must be lower than the car threshold.
   # Entered in cm.
   open_delay: '30'
   close_delay: '30'
-  distance_update_threshold: 500ms
+  distance_update_interval: 500ms
   distance_pulse_time: 20us
   # Clean up noise
   distance_median_window_size: '30'
@@ -43,8 +42,8 @@ sensor:
       - lambda: 'return isnan(x) ? 3 : x;'
       # take median to reduce noise
       - median:
-        window_size: ${distance_median_window_size}
-        send_first_at: ${distance_median_send_first_at}
+          window_size: ${distance_median_window_size}
+          send_first_at: ${distance_median_send_first_at}
       - multiply: 100
       - delta: 1
 
@@ -62,7 +61,7 @@ switch:
     on_turn_on:
       # Only pulse on for relay_click_time
       - delay: !lambda "return id(relay_click_time).state;"
-      - switch.turn_off relay
+      - switch.turn_off: relay
   - platform: template
     name: "${device_name} Open Alarm"
     id: open_alarm
