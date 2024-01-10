@@ -34,5 +34,5 @@ wifi:
     subnet: ${wifi_subnet}
     dns1: ${dns_server}
   ap:
-    ssid: "${device_name} Fallback Hotspot"
+    ssid: "${device_name} Fallback"
     password: $wifi_fallback
