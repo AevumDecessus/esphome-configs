@@ -24,6 +24,7 @@ wifi:
   manual_ip:
     static_ip: ${wifi_ip}
     gateway: ${wifi_gateway}
+    subnet: ${wifi_subnet}
     dns1: ${dns_server}
 
 esp32_ble_tracker:
