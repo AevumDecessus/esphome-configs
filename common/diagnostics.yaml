@@ -2,17 +2,44 @@ substitutions:
   device_name: test-device
 
 sensor:
-  - platform: wifi_signal
-    name: ${devicename} RSSI
+  - platform: wifi_signal # wifi signal in db
+    name: ${device_name} Wifi RSSI
+    id: wifi_signal_db
     update_interval: 5min
+    entity_category: "diagnostic"
     filters:
-      - median:
-        window_size: 5
+      - sliding_window_moving_average:
+          window_size: 5
+          send_every: 1
+      - throttle: 60s
+  - platform: copy # wifi signal in %
+    source_id: wifi_signal_db
+    name: ${device_name} Wifi Signal Percent
+    filters:
+      - lambda: return min(max(2 * (x + 100.0), 0.0), 100.0);
+      - sliding_window_moving_average:
+          window_size: 5
+          send_every: 1
+      - throttle: 60s
+    unit_of_measurement: "Signal %"
+    entity_category: "diagnostic"
+  - platform: uptime
+    name: ${device_name} Uptime
+    entity_category: "diagnostic"
+    unit_of_measurement: d
+    update_interval: 600s
+    accuracy_decimals: 1
+    filters:
+      - multiply: 0.000011574
+      - throttle: 900s
 
 binary_sensor:
   - platform: status
-    name: ${devicename} Status
+    name: ${device_name} Status
+    entity_category: "diagnostic"
 
 button:
   - platform: restart
-    name: ${devicename} Restart
+    name: ${device_name} Restart
+    id: restart_button
+    entity_category: "diagnostic"
