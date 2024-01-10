@@ -36,8 +36,3 @@ wifi:
   ap:
     ssid: "${device_name} Fallback Hotspot"
     password: $wifi_fallback
-
-esp32_ble_tracker:
-
-bluetooth_proxy:
-  active: true
