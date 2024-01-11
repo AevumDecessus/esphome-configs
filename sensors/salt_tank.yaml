@@ -1,0 +1,19 @@
+substitutions:
+  device_name: "test-device"
+  trigger_pin: GPIO22
+  echo_pin: GPIO23
+  update_interval: "5min"
+  tank_height_cm: "42"
+
+sensor:
+  - platform: ultrasonic
+    trigger_pin: ${trigger_pin}
+    echo_pin: ${echo_pin}
+    name: "${device_name} Salt Level %"
+    update_interval: ${update_interval}
+    filters:
+      # Calculate in %
+      # Uses height of your salt tank and subtracts to return current percent
+      # as the distance is greater the lower the salt level
+      - lambda: return (($tank_height_cm/100)-x)*(100/($tank_height_cm/100))
+    unit_of_measurement: "%"

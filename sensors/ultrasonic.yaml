@@ -2,7 +2,7 @@ substitutions:
   device_name: "test-device"
   trigger_pin: GPIO22
   echo_pin: GPIO23
-  update_interval: 5m
+  update_interval: "5min"
 
 sensor:
   - platform: ultrasonic
