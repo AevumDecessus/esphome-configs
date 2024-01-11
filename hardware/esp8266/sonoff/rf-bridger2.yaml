@@ -1,0 +1,42 @@
+substitutions:
+  device_name: test-device
+
+esp8266:
+  board: esp01_1m
+
+# Limit logging baud rate because of rf bridge
+logger:
+  baud_rate: 0
+
+uart:
+  tx_pin: 1
+  rx_pin: 3
+  baud_rate: 19200
+
+api:
+  services:
+    - service: send_rf_code
+      variables:
+        sync: int
+        low: int
+        high: int
+        code: int
+      then:
+        - rf_bridge.send_code:
+            sync: !lambda 'return sync;'
+            low: !lambda 'return low;'
+            high: !lambda 'return high;'
+            code: !lambda 'return code;'
+    - service: learn
+      then:
+        - rf_bridge.learn
+
+rf_bridge:
+  on_code_received:
+    - homeassistant.event:
+        event: esphome.rf_code_received
+        data:
+          sync: !lambda 'return data.sync;'
+          low: !lambda 'return data.low;'
+          high: !lambda 'return data.high;'
+          code: !lambda 'return data.code;'
