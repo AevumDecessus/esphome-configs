@@ -1,0 +1,15 @@
+substitutions:
+  device_name: "test-device"
+  trigger_pin: GPIO22
+  echo_pin: GPIO23
+  update_interval: 5m
+
+sensor:
+  - platform: ultrasonic
+    trigger_pin: ${trigger_pin}
+    echo_pin: ${echo_pin}
+    name: "${device_name} Distance"
+    update_interval: ${update_interval}
+    filters:
+      - lambda: return (x*100);
+    unit_of_measurement: "cm"
