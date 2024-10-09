@@ -1,0 +1,21 @@
+substitutions:
+  device_name: garage-door-left
+  api_encryption_key: !secret api_encryption_key
+  ota_password: !secret ota_password
+  wifi_ssid: !secret wifi_ssid
+  wifi_password: !secret wifi_password
+  wifi_ip: "192.168.253.73"
+  wifi_subnet: !secret wifi_subnet
+  wifi_gateway: !secret wifi_gateway
+  dns_server: !secret dns_server
+  wifi_fallback: !secret fallback_password
+
+packages:
+  common: 
+    url: https://github.com/AevumDecessus/esphome-configs
+    file: common/common.yaml
+    refresh: 0s
+  opengarage:
+    url: https://github.com/AevumDecessus/esphome-configs
+    file: hardware/esp8266/opengarage/opengarage.yaml
+    refresh: 0s

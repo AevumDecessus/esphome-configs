@@ -1,0 +1,29 @@
+substitutions:
+  device_name: server-room
+  api_encryption_key: !secret api_encryption_key
+  ota_password: !secret ota_password
+  wifi_ssid: !secret wifi_ssid
+  wifi_password: !secret wifi_password
+  wifi_ip: "192.168.253.67"
+  wifi_subnet: !secret wifi_subnet
+  wifi_gateway: !secret wifi_gateway
+  dns_server: !secret dns_server
+  wifi_fallback: !secret fallback_password
+
+packages:
+  common: 
+    url: https://github.com/AevumDecessus/esphome-configs
+    file: common/common.yaml
+    refresh: 0s
+  device: 
+    url: https://github.com/AevumDecessus/esphome-configs
+    file: hardware/esp32/esp32.yaml
+    refresh: 0s
+  dht: 
+    url: https://github.com/AevumDecessus/esphome-configs
+    file: sensors/dht22.yaml
+    refresh: 0s
+  salt:
+    url: https://github.com/AevumDecessus/esphome-configs
+    file: sensors/salt_tank.yaml
+    refresh: 0s
