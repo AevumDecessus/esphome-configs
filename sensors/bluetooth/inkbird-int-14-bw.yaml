@@ -1,0 +1,4 @@
+ble_client:
+  - mac_address: A4:C1:38:09:D4:38
+    id: inkbird_4probe_meat_thermometer
+    auto_connect: true
