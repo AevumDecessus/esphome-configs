@@ -16,5 +16,5 @@ packages:
     refresh: 0s
   device: 
     url: https://github.com/AevumDecessus/esphome-configs
-    file: hardware/esp32/esp32.yaml
+    file: hardware/esp32/esp32-idf.yaml
     refresh: 0s
