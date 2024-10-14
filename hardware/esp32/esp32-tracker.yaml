@@ -1,0 +1,15 @@
+substitutions:
+  board: esp32dev
+  framework: esp-idf
+
+esp32:
+  board:  ${board}
+  framework:
+    type: ${framework}
+
+esp32_ble_tracker:
+  scan_parameters:
+    active: true
+
+bluetooth_proxy:
+  active: true
