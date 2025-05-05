@@ -14,7 +14,7 @@ substitutions:
   open_delay: '30'
   close_delay: '30'
   distance_update_interval: 500ms
-  distance_pulse_time: 50us
+  distance_pulse_time: 20us
   # Clean up noise
   distance_median_window_size: '30'
   distance_median_send_first_at: '5'
@@ -36,7 +36,7 @@ sensor:
     update_interval: ${distance_update_interval}
     unit_of_measurement: cm
     pulse_time: ${distance_pulse_time}
-    timeout: 3m
+    timeout: 4m
     filters:
       # set value to max on sensor timeout
       - lambda: 'return isnan(x) ? 3 : x;'
