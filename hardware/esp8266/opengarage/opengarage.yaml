@@ -14,7 +14,7 @@ substitutions:
   open_delay: '30'
   close_delay: '30'
   distance_update_interval: 500ms
-  distance_pulse_time: 20us
+  distance_pulse_time: 50us
   # Clean up noise
   distance_median_window_size: '30'
   distance_median_send_first_at: '5'
