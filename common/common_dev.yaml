@@ -1,0 +1,27 @@
+substitutions:
+  device_name: test-device
+  ota_password: BADPASSWORD
+  wifi_ssid: BAD_SSID
+  wifi_password: BAD_PASSWORD
+  wifi_fallback: FALLBACK_PASSWORD
+
+esphome:
+  name: ${device_name}
+
+logger:
+
+api:
+  password: ${ota_password}
+
+ota:
+  - platform: esphome
+    password: ${ota_password}
+
+wifi:
+  ssid: ${wifi_ssid}
+  password: ${wifi_password}
+  fast_connect: true
+  domain: ${wifi_domain}
+  ap:
+    ssid: "${device_name} Fallback"
+    password: $wifi_fallback
