@@ -20,8 +20,9 @@ ota:
   - platform: esphome
     password: ${ota_password}
 
-manual_ip:
-  static_ip: ${ip_address}
-  gateway: ${gateway}
-  subnet: ${subnet}
-  dns1: ${dns_server}
+ethernet:
+  manual_ip:
+    static_ip: ${ip_address}
+    gateway: ${gateway}
+    subnet: ${subnet}
+    dns1: ${dns_server}
