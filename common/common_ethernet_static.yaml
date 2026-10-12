@@ -1,0 +1,27 @@
+substitutions:
+  device_name: test-device
+  api_encryption_key: BADKEY
+  ota_password: BADPASSWORD
+  dns_server: 192.168.1.1
+  ip_address: 192.168.1.1
+  gateway: 192.168.1.1
+  subnet: 255.255.255.0
+
+esphome:
+  name: ${device_name}
+
+logger:
+
+api:
+  encryption:
+    key: ${api_encryption_key}
+
+ota:
+  - platform: esphome
+    password: ${ota_password}
+
+manual_ip:
+  static_ip: ${ip_address}
+  gateway: ${gateway}
+  subnet: ${subnet}
+  dns1: ${dns_server}
