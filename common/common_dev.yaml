@@ -4,6 +4,7 @@ substitutions:
   wifi_ssid: BAD_SSID
   wifi_password: BAD_PASSWORD
   wifi_fallback: FALLBACK_PASSWORD
+  api_encryption_key: BADKEY
 
 esphome:
   name: ${device_name}
@@ -11,7 +12,8 @@ esphome:
 logger:
 
 api:
-  password: ${ota_password}
+  encryption:
+    key: ${api_encryption_key}
 
 ota:
   - platform: esphome
