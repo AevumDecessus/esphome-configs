@@ -1,0 +1,42 @@
+substitutions:
+  device_name: test-device
+  api_encryption_key: BADKEY
+  ota_password: BADPASSWORD
+  wifi_ssid: BAD_SSID
+  wifi_password: BAD_PASSWORD
+  wifi_ip: 192.168.1.1
+  wifi_subnet: 255.255.255.0
+  wifi_gateway: 192.168.1.1
+  wifi_domain: .local
+  dns_server: 192.168.1.1
+  wifi_fallback: FALLBACK_PASSWORD
+
+esphome:
+  name: ${device_name}
+
+logger:
+
+api:
+  encryption:
+    key: ${api_encryption_key}
+
+ota:
+  - platform: esphome
+    password: ${ota_password}
+
+bluetooth_proxy:
+  active: false
+
+wifi:
+  ssid: ${wifi_ssid}
+  password: ${wifi_password}
+  fast_connect: true
+  domain: ${wifi_domain}
+  manual_ip:
+    static_ip: ${wifi_ip}
+    gateway: ${wifi_gateway}
+    subnet: ${wifi_subnet}
+    dns1: ${dns_server}
+  ap:
+    ssid: "${device_name} Fallback"
+    password: $wifi_fallback

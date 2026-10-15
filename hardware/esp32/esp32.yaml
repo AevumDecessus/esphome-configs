@@ -6,8 +6,3 @@ esp32:
   board:  ${board}
   framework:
     type: ${framework}
-
-esp32_ble_tracker:
-
-bluetooth_proxy:
-  active: true
